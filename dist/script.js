@@ -1,56 +1,62 @@
-// This is a simple JavaScript file that adds interactivity to the HTML page
-// It defines a function to show an alert when a link is clicked
-function sayHello() {
-    alert("Hello, world from javascript!");
-}
-// This function will be called when the link is clicked
-// It shows an alert with a message
-// Ensure the DOM is fully loaded before attaching the event listener
-document.addEventListener("DOMContentLoaded", function() {
-    const link = document.getElementById("hello-link");
-    if (!link) {
-        console.error("Link with ID 'hello-link' not found.");
-        return;
-    }
-    link.addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent the default link behavior
-        sayHello();
-    });
-});
+window.addEventListener("DOMContentLoaded", domLoaded);
 
-async function getRandomJoke() {
-    return fetch('https://icanhazdadjoke.com/', {
-        headers: {
-            'Accept': 'text/plain'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.text();
-    })
-    .catch(error => {
-        console.error('There was a problem fetching the joke:', error);
-        return "Failed to fetch a joke. Please try again later.";
-    });
+function domLoaded() {
+  const addBtn = document.getElementById("add-btn");
+  const inputField = document.getElementById("item-input");
+
+  // Task 2: Register click event handler for Add button
+  addBtn.addEventListener("click", addBtnClick);
+
+  // Task 3: Handle "Enter" key press on input field
+  inputField.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+      addBtnClick();
+    }
+  });
+
+  // Attach removeTask handler to initial list items if present
+  const doneButtons = document.querySelectorAll(".done-btn");
+  doneButtons.forEach(button => {
+    button.addEventListener("click", removeTask);
+  });
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    const jokeButton = document.getElementById("joke-button");
-    if (!jokeButton) {
-        console.error("Button with ID 'joke-button' not found.");
-        return;
-    }
-    jokeButton.addEventListener("click", async function() {
+function addBtnClick() {
+  const inputField = document.getElementById("item-input");
+  const titleText = inputField.value;
 
-            const jokeDisplay = document.getElementById("joke-display");
-            if (!jokeDisplay) {
-                console.error("Element with ID 'joke-display' not found.");
-                return;
-            }
-            jokeDisplay.textContent = "Loading joke...";
-            const joke = await getRandomJoke();
-            jokeDisplay.textContent = joke;
-    });
-});
+  // Task 4: Prevent empty entries
+  if (titleText.trim() === "") {
+    return;
+  }
+
+  addTask(titleText);
+
+  // Task 3: Clear input field & reset focus back to input
+  inputField.value = "";
+  inputField.focus();
+}
+
+function addTask(titleText) {
+  // Task 2: Create new <li> element
+  const li = document.createElement("li");
+
+  // Task 2: Set innerHTML with task text span and remove button
+  li.innerHTML = `<span class="task-text">${titleText}</span><button class="done-btn">&#10006;</button>`;
+
+  // Task 2: Find <ol> and append the new <li>
+  const ol = document.querySelector("ol");
+  ol.appendChild(li);
+
+  // Task 5: Search DOM for all buttons with class done-btn and register removeTask on the last one
+  const doneButtons = document.querySelectorAll(".done-btn");
+  const lastButton = doneButtons[doneButtons.length - 1];
+  lastButton.addEventListener("click", removeTask);
+}
+
+function removeTask(event) {
+  // Task 5: Get parent <li> element and remove it from <ol>
+  const li = event.target.parentNode;
+  const ol = document.querySelector("ol");
+  ol.removeChild(li);
+}
